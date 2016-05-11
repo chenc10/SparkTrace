@@ -7,8 +7,6 @@ from operator import add
 import time
 import random
 
-print "hah"
-
 conf = SparkConf()
 conf.setAppName("chen")
 conf.set("spark.scheduler.mode","GPS")
@@ -22,7 +20,7 @@ sc = SparkContext(conf=conf)
 def waiting(wait_time):
     # milliseconds to wait
     start = time.time()
-    while time.time()*1000 < start*1000 + wait_time:
+    while time.time()*1000 < start*1000 + wait_time/10:
         time.sleep(0.01)
 
 def wait_map(wait_time, rdd):
@@ -39,40 +37,33 @@ def run_job(P):
     print "job-%d finishes" %P[0]
 
 def set_parameters(NoJ):
+    print "hah"
     random.seed(0)
     Parameters = []
     SubmittingTime = [2000]
-    Sizes = []
-    TaskRunTimes = []
     SubmittingStandardInterval = 2000
-    NumOfShortJobs = 45
-    NumOfLongJobs = NoJ-NumOfShortJobs
     cT = [0]
+    TaskRunTimes = []
+    JobSizes = []
     for i in range(NoJ):
-        TaskRunTimes.append(random.randint(1000,5000))
-        Sizes.append(random.randint(5,5))
+        TaskRunTimes.append(random.randint(1000,5000)
+#        JobSizes.append(random.randint(5,5))
         cT.append(cT[-1] + TaskRunTimes[-1]*Sizes[-1])
-
     for i in range(NoJ-1):
-        if i == 0:
-            SubmittingTime.append(int(cT[i]/20.0))
-            continue
-        SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval))
+       SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval))
     for i in range(NoJ):
-        if i==5:
+        if i==2:
 #        if i%10==2:
 #            Parameters.append([i, SubmittingTime[i], random.randint(11000,15000), random.randint(11, 40)])
-            Parameters.append([i, SubmittingTime[i], random.randint(6000,6000), random.randint(20, 20)])
+            Parameters.append([i, SubmittingTime[i], random.randint(11000,15000), random.randint(20, 20)])
         else:
-            Parameters.append([i, SubmittingTime[i], TaskRunTimes[i], Sizes[i]]) 
+            Parameters.append([i, SubmittingTime[i], random.randint(1000,5000), random.randint(1,10)]) 
     return Parameters
 
 if __name__=="__main__":
-    NoJ = 50
+    NoJ = 200
     pool = ThreadPool(NoJ)
     parameters = set_parameters(NoJ)
-    print parameters
-    print "tmp"
 
     jobProperties = ""
 

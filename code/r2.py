@@ -9,7 +9,7 @@ import random
 
 conf = SparkConf()
 conf.setAppName("chen")
-conf.set("spark.scheduler.mode","SJF")
+conf.set("spark.scheduler.mode","GPS")
 
 sc = SparkContext(conf=conf)
 #    logData = sc.textFile(logFile).cache()
@@ -39,24 +39,21 @@ def run_job(P):
 def set_parameters(NoJ):
     random.seed(0)
     Parameters = []
-    SubmittingTime = [2000]
+    SubmittingTime = [4000]
     SubmittingStandardInterval1 = 1000
-    SubmittingStandardInterval2 = 8000
+    SubmittingStandardInterval2 = 3000
     cT = [0]
     TaskRunTimes = []
     JobSizes = []
     for i in range(NoJ):
-        TaskRunTimes.append(4000)
-        JobSizes.append(20)
+#        TaskRunTimes.append(4000)
+#        JobSizes.append(20)
 
-#        TaskRunTimes.append(random.randint(4000,4000))
-#        JobSizes.append(random.randint(20,20))
-
-#        TaskRunTimes.append(random.randint(4000,4000))
-#        JobSizes.append(random.randint(1,10))
+        TaskRunTimes.append(random.randint(4000,4000))
+        JobSizes.append(random.randint(1,10))
 #        cT.append(cT[-1] + TaskRunTimes[-1]*Sizes[-1])
     for i in range(NoJ-1):
-	if i < 2:
+	if i < 50:
        	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval1))
     	else:
        	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval2))
@@ -73,7 +70,7 @@ def set_parameters(NoJ):
     return Parameters
 
 if __name__=="__main__":
-    NoJ = 100
+    NoJ = 300
     pool = ThreadPool(NoJ)
     parameters = set_parameters(NoJ)
 

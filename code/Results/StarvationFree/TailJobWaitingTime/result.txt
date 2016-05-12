@@ -1,0 +1,2 @@
+The tail turnaround time of gps is 75s.
+The tail turnaround time of sjf is 92s.

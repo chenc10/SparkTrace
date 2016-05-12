@@ -24,6 +24,7 @@ class Job:
     self.logger = logging.getLogger("Job")
     # Map of stage IDs to Stages.
     self.stages = collections.defaultdict(stage.Stage)
+    self.submittingTime = 0
   
   def add_event(self, data, is_json):
     if is_json:
@@ -39,9 +40,10 @@ class Job:
         stage_id = stage_id_and_suffix[:stage_id_and_suffix.find(" ")]
         self.stages[stage_id].add_event(data, False)
 
-  def initialize_job(self):
+  def initialize_job(self, time, initialTime):
     """ Should be called after adding all events to the job. """
     # Drop empty stages.
+    self.submittingTime = time
     stages_to_drop = []
     for id, s in self.stages.iteritems():
       if len(s.tasks) == 0:
@@ -53,7 +55,7 @@ class Job:
     # Compute the amount of overlapped time between stages
     # (there should just be two stages, at the beginning, that overlap and run concurrently).
     # This computation assumes that not more than two stages overlap.
-    print "  ", ["%s: %s tasks" % (id, len(s.tasks)) for id, s in self.stages.iteritems()]
+    #print "  ", ["%s: %s tasks" % (id, len(s.tasks)) for id, s in self.stages.iteritems()]
     start_and_finish_times = [(id, s.start_time, s.conservative_finish_time())
         for id, s in self.stages.iteritems()]
     start_and_finish_times.sort(key = lambda x: x[1])
@@ -61,9 +63,14 @@ class Job:
     old_end = 0
     previous_id = ""
     self.stages_to_combine = set()
+    ts = 0.0
     for id, start, finish in start_and_finish_times:
-      print "id, start, finish"
-      print id, start-1462450926029, finish-1462450926029
+      if id <5 or (id-5)%10<>0 or id > 95:
+	continue
+      print "%.3f," %(float(finish-self.submittingTime)/1000),
+      continue
+      print "id, submission, start, finish, runTime, duration"
+      print id, self.submittingTime-initialTime, start-initialTime, finish-initialTime, finish-start, finish-self.submittingTime
       if start < old_end:
         self.overlap += old_end - start
         print "   Overlap:", self.overlap, "between ", id, "and", previous_id
@@ -88,6 +95,7 @@ class Job:
     return [task for stage in self.stages.values() for task in stage.tasks]
 
   def print_stage_info(self, cur):
+    return
     for id, stage in self.stages.iteritems():
 #      print "   STAGE %s: %s" % (id, stage.verbose_str())
        print "   STAGE %s: average run time: %s" % (id, stage.average_task_runtime())

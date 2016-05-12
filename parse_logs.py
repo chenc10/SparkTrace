@@ -20,6 +20,7 @@ class Analyzer:
     self.jobs = collections.defaultdict(Job)
     # For each stage, jobs that rely on the stage.
     self.jobs_for_stage = {}
+    submittingTimeDict = dict()
 
     f = open(filename, "r")
     test_line = f.readline()
@@ -36,11 +37,14 @@ class Analyzer:
       if is_json:
         json_data = get_json(line)
         event_type = json_data["Event"]
+        if event_type == "SparkListenerBlockManagerAdded":
+          initialTime = json_data["Timestamp"]
         if event_type == "SparkListenerJobStart":
           if parse_as_single_job:
             job_id = 0
           else:
             job_id = json_data["Job ID"]
+          submittingTimeDict[job_id] = json_data["Submission Time"]
           # Avoid using "Stage Infos" here, which was added in 1.2.0.
           stage_ids = json_data["Stage IDs"]
 #          print "Stage ids: %s" % stage_ids
@@ -60,7 +64,7 @@ class Analyzer:
 
     print "Finished reading input data:"
     for job_id, job in self.jobs.iteritems():
-      job.initialize_job()
+      job.initialize_job(submittingTimeDict[job_id], initialTime)
 
   def output_all_waterfalls(self):
     for job_id, job in self.jobs.iteritems():
@@ -68,6 +72,7 @@ class Analyzer:
       job.write_waterfall(filename)
 
   def output_all_job_info(self, agg_results_filename):
+    return
     ## add the sql part here
     conn = MySQLdb.connect(host='localhost', user='root', passwd='root', db='spark', port=3306)
     cur = conn.cursor()

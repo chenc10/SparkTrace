@@ -20,7 +20,7 @@ sc = SparkContext(conf=conf)
 def waiting(wait_time):
     # milliseconds to wait
     start = time.time()
-    while time.time()*1000 < start*1000 + wait_time:
+    while time.time()*1000 < start*1000 + wait_time/10:
         time.sleep(0.01)
 
 def wait_map(wait_time, rdd):
@@ -39,24 +39,24 @@ def run_job(P):
 def set_parameters(NoJ):
     random.seed(0)
     Parameters = []
-    SubmittingTime = [200]
-    SubmittingStandardInterval1 = 100
-    SubmittingStandardInterval2 = 500
+    SubmittingTime = [2000]
+    SubmittingStandardInterval1 = 1000
+    SubmittingStandardInterval2 = 8000
     cT = [0]
     TaskRunTimes = []
     JobSizes = []
     for i in range(NoJ):
-#        TaskRunTimes.append(4000)
-#        JobSizes.append(20)
+        TaskRunTimes.append(4000)
+        JobSizes.append(20)
 
-        TaskRunTimes.append(random.randint(400,450))
-        JobSizes.append(random.randint(9,11))
+#        TaskRunTimes.append(random.randint(4000,4000))
+#        JobSizes.append(random.randint(20,20))
 
 #        TaskRunTimes.append(random.randint(4000,4000))
 #        JobSizes.append(random.randint(1,10))
 #        cT.append(cT[-1] + TaskRunTimes[-1]*Sizes[-1])
     for i in range(NoJ-1):
-	if i < 4:
+	if i < 2:
        	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval1))
     	else:
        	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval2))
@@ -65,7 +65,7 @@ def set_parameters(NoJ):
 #        if i%10==2:
 #            Parameters.append([i, SubmittingTime[i], random.randint(11000,15000), random.randint(11, 40)])
 #            Parameters.append([i, SubmittingTime[i], random.randint(6000,6000), random.randint(20, 20)])
-            Parameters.append([i, SubmittingTime[i], 500, 12]) 
+            Parameters.append([i, SubmittingTime[i], 5000, 20]) 
         else:
             Parameters.append([i, SubmittingTime[i], TaskRunTimes[i], JobSizes[i]])
 #            Parameters.append([i, SubmittingTime[i], random.randint(1000,5000), random.randint(1,10)]) 
@@ -73,7 +73,7 @@ def set_parameters(NoJ):
     return Parameters
 
 if __name__=="__main__":
-    NoJ = 100
+    NoJ = 50
     pool = ThreadPool(NoJ)
     parameters = set_parameters(NoJ)
 

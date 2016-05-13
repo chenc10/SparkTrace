@@ -1,0 +1,15 @@
+numberOfSmallJobs duration
+GPS:
+10  10s
+20  15s
+30  15s
+40  15s
+50  15s
+
+
+SJF:
+10  9s
+20  16s
+30  21s
+40  28s
+50  34s

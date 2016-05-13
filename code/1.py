@@ -68,7 +68,7 @@ def set_parameters(NoJ):
     return Parameters
 
 if __name__=="__main__":
-    NoJ = 50
+    NoJ = 51
     pool = ThreadPool(NoJ)
     parameters = set_parameters(NoJ)
     print parameters

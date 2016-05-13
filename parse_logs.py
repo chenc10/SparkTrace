@@ -5,7 +5,6 @@ import numpy
 from optparse import OptionParser
 import sys
 
-import MySQLdb
 
 from job import Job
 
@@ -74,16 +73,11 @@ class Analyzer:
   def output_all_job_info(self, agg_results_filename):
     return
     ## add the sql part here
-    conn = MySQLdb.connect(host='localhost', user='root', passwd='root', db='spark', port=3306)
-    cur = conn.cursor()
-    cur.execute('select * from stages')
     for job_id, job in self.jobs.iteritems():
       # filename = "%s_%s" % (self.filename, job_id)
       print "\nJob", job_id, " has stages: ", job.stages.keys()
       self.__output_job_info(job, cur, agg_results_filename)
 #    conn.commit()
-    cur.close()
-    conn.close()
 
   def __output_job_info(self, job, cur, agg_results_filename):
     job.print_stage_info(cur)

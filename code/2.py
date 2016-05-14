@@ -9,7 +9,7 @@ import random
 
 conf = SparkConf()
 conf.setAppName("chen")
-conf.set("spark.scheduler.mode","SJF")
+conf.set("spark.scheduler.mode","FAIR")
 
 sc = SparkContext(conf=conf)
 #    logData = sc.textFile(logFile).cache()
@@ -31,7 +31,8 @@ def run_job(P):
     partitionNum = P[3]
     waiting(P[1])
     print "run-job-jobProperties: "+jobProperties
-    sc.setLocalProperty("job.profiledInfo", jobProperties)
+#    sc.setLocalProperty("job.profiledInfo", jobProperties)
+    sc.setLocalProperty("spark.scheduler.pool", str(P[0])
     value = sc.parallelize(range(partitionNum), partitionNum).map(lambda i: (i, i)).map(lambda i: wait_map(P[2], i))
     value.collect()
     print "job-%d finishes" %P[0]
@@ -44,9 +45,9 @@ def set_parameters(Data):
     TaskRunTimes = []
     for i in range(len(Data)):
         tmp = Data[i].split("\t")
-        Intervals = int(tmp[2])
-        JobSizes = int(tmp[3])
-        TaskRunTimes = int(tmp[4])
+        Intervals.append(int(tmp[2]))
+        JobSizes.append(int(tmp[3]))
+        TaskRunTimes.append(int(tmp[4]))
     SubmittingTime = [200]
 #    SubmittingStandardInterval1 = 300
 #    SubmittingStandardInterval2 = 1000
@@ -80,7 +81,7 @@ if __name__=="__main__":
 
     jobProperties = ""
 
-    for i in range(NoJ):
+    for i in range(len(Data)):
 	if i > 0:
 	    jobProperties = jobProperties + " "
 	jobProperties = jobProperties + str(parameters[i][0]) + "+" + str(parameters[i][1]) + "+" + str(int(parameters[i][2]*parameters[i][3]/NumOfSlots))

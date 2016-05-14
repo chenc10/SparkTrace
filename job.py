@@ -65,10 +65,6 @@ class Job:
     self.stages_to_combine = set()
     ts = 0.0
     for id, start, finish in start_and_finish_times:
-      if id <5 or (id-5)%10<>0 or id > 95:
-	continue
-      print "%.3f," %(float(finish-self.submittingTime)/1000),
-      continue
       print "id, submission, start, finish, runTime, duration"
       print id, self.submittingTime-initialTime, start-initialTime, finish-initialTime, finish-start, finish-self.submittingTime
       if start < old_end:
@@ -94,8 +90,7 @@ class Job:
     """ Returns a list of all tasks. """
     return [task for stage in self.stages.values() for task in stage.tasks]
 
-  def print_stage_info(self, cur):
-    return
+  def print_stage_info(self ):
     for id, stage in self.stages.iteritems():
 #      print "   STAGE %s: %s" % (id, stage.verbose_str())
        print "   STAGE %s: average run time: %s" % (id, stage.average_task_runtime())

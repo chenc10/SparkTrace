@@ -36,56 +36,54 @@ def run_job(P):
     value.collect()
     print "job-%d finishes" %P[0]
 
-def set_parameters(NoJ):
+def set_parameters(Data):
     random.seed(0)
     Parameters = []
-    SubmittingTime = [200]
-    SubmittingStandardInterval1 = 300
-    SubmittingStandardInterval2 = 1000
-    cT = [0]
-    TaskRunTimes = []
+    Intervals = []
     JobSizes = []
-    for i in range(NoJ):
+    TaskRunTimes = []
+    for i in range(len(Data)):
+        tmp = Data[i].split("\t")
+        Intervals = int(tmp[2])
+        JobSizes = int(tmp[3])
+        TaskRunTimes = int(tmp[4])
+    SubmittingTime = [200]
+#    SubmittingStandardInterval1 = 300
+#    SubmittingStandardInterval2 = 1000
+#    cT = [0]
+#    for i in range(NoJ):
 #        TaskRunTimes.append(4000)
 #        JobSizes.append(20)
 
-        TaskRunTimes.append(random.randint(800,1300))
-        JobSizes.append(random.randint(8,13))
+#        TaskRunTimes.append(random.randint(800,1300))
+#        JobSizes.append(random.randint(8,13))
 
 #        TaskRunTimes.append(random.randint(4000,4000))
 #        JobSizes.append(random.randint(1,10))
 #        cT.append(cT[-1] + TaskRunTimes[-1]*Sizes[-1])
-    random.seed(0)
-    for i in range(NoJ-1):
-#	if i < 10:
-#       	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval1))
-        if i == 2:
-       	    SubmittingTime.append(SubmittingTime[-1] + 10)
-    	else:
-       	    SubmittingTime.append(SubmittingTime[-1] + int(random.random()*SubmittingStandardInterval2))
-    for i in range(NoJ):
-        if i==2:
-#        if i%10==2:
-#            Parameters.append([i, SubmittingTime[i], random.randint(11000,15000), random.randint(11, 40)])
-#            Parameters.append([i, SubmittingTime[i], random.randint(6000,6000), random.randint(20, 20)])
-            Parameters.append([i, SubmittingTime[i], 2000, 20]) 
-        else:
-            Parameters.append([i, SubmittingTime[i], TaskRunTimes[i], JobSizes[i]])
+    for i in range(len(Data)-1):
+       	SubmittingTime.append(SubmittingTime[-1] + Intervals[i+1])
+    for i in range(len(Data)):
+        Parameters.append([i, SubmittingTime[i], TaskRunTimes[i], JobSizes[i]])
 #            Parameters.append([i, SubmittingTime[i], random.randint(1000,5000), random.randint(1,10)]) 
 #            Parameters.append([i, SubmittingTime[i], TaskRunTimes[i], JobSizes[i]])
     return Parameters
 
 if __name__=="__main__":
-    NoJ = 51
-    pool = ThreadPool(NoJ)
-    parameters = set_parameters(NoJ)
+    f = open("small-scale-sampledData",'r')
+    Data = f.readlines()
+    f.close()
+#    NoJ = 51
+    pool = ThreadPool(len(Data))
+    parameters = set_parameters(Data)
+    NumOfSlots = 20.0
 
     jobProperties = ""
 
     for i in range(NoJ):
 	if i > 0:
 	    jobProperties = jobProperties + " "
-	jobProperties = jobProperties + str(parameters[i][0]) + "+" + str(parameters[i][1]) + "+" + str(int(parameters[i][2]*parameters[i][3]/20.0))
+	jobProperties = jobProperties + str(parameters[i][0]) + "+" + str(parameters[i][1]) + "+" + str(int(parameters[i][2]*parameters[i][3]/NumOfSlots))
 
     print "jobProperties: "+jobProperties
     f=file("/root/spark/job.profiledInfo","w")

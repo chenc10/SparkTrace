@@ -9,7 +9,7 @@ import random
 
 conf = SparkConf()
 conf.setAppName("chen")
-conf.set("spark.scheduler.mode","FIFO")
+conf.set("spark.scheduler.mode","FAIR")
 
 sc = SparkContext(conf=conf)
 #    logData = sc.textFile(logFile).cache()
@@ -31,8 +31,8 @@ def run_job(P):
     partitionNum = P[3]
     waiting(P[1])
     print "run-job-jobProperties: "+jobProperties
-    sc.setLocalProperty("job.profiledInfo", jobProperties)
-#    sc.setLocalProperty("spark.scheduler.pool", str(P[0]))
+#    sc.setLocalProperty("job.profiledInfo", jobProperties)
+    sc.setLocalProperty("spark.scheduler.pool", str(P[0]))
     value = sc.parallelize(range(partitionNum), partitionNum).map(lambda i: (i, i)).map(lambda i: wait_map(P[2], i))
     value.collect()
     print "job-%d finishes" %P[0]
@@ -71,13 +71,13 @@ def set_parameters(Data):
     return Parameters
 
 if __name__=="__main__":
-    f = open("small-scale-sampledData",'r')
+    f = open("/root/experiment/SparkTrace/code/sampledData",'r')
     Data = f.readlines()
     f.close()
 #    NoJ = 51
     pool = ThreadPool(len(Data))
     parameters = set_parameters(Data)
-    NumOfSlots = 20.0
+    NumOfSlots = 100.0
 
     jobProperties = ""
 

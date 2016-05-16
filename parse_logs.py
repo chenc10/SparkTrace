@@ -62,9 +62,11 @@ class Analyzer:
         self.jobs[0].add_event(line, False)
 
     print "Finished reading input data:"
+    Sum = 0.0
     for job_id, job in self.jobs.iteritems():
       # currently the job info is displayed here
-      job.initialize_job(submittingTimeDict[job_id], initialTime)
+      Sum = Sum + job.initialize_job(submittingTimeDict[job_id], initialTime)
+    print "Average: ", Sum/len(self.jobs)
 
   def output_all_waterfalls(self):
     for job_id, job in self.jobs.iteritems():
@@ -74,23 +76,17 @@ class Analyzer:
   def output_all_job_info(self, agg_results_filename):
     return
     ## add the sql part here
-<<<<<<< HEAD
-=======
 #    conn = MySQLdb.connect(host='localhost', user='root', passwd='root', db='spark', port=3306)
 #    cur = conn.cursor()
 #    cur.execute('select * from stages')
->>>>>>> 053733a173436930cdcee8d71032b68b6529a387
     for job_id, job in self.jobs.iteritems():
       # filename = "%s_%s" % (self.filename, job_id)
       print "\nJob", job_id, " has stages: ", job.stages.keys()
 #      self.__output_job_info(job, cur, agg_results_filename)
       self.__output_job_info(job,  agg_results_filename)
 #    conn.commit()
-<<<<<<< HEAD
-=======
 #    cur.close()
 #    conn.close()
->>>>>>> 053733a173436930cdcee8d71032b68b6529a387
 
   def __output_job_info(self, job, agg_results_filename):
     job.print_stage_info()

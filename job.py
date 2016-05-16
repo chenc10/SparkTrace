@@ -67,6 +67,7 @@ class Job:
     for id, start, finish in start_and_finish_times:
       print "id, submission, start, finish, runTime, duration"
       print id, self.submittingTime-initialTime, start-initialTime, finish-initialTime, finish-start, finish-self.submittingTime
+      return finish-self.submittingTime
       if start < old_end:
         self.overlap += old_end - start
         print "   Overlap:", self.overlap, "between ", id, "and", previous_id
